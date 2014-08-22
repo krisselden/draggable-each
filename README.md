@@ -1,4 +1,6 @@
-# Draggable-each
+# draggable-each
+
+@stefanpenner's https://github.com/stefanpenner/d-d repackaged as an ember-cli-addon, which wraps jquery-ui-sortable in an ember component.
 
 This README outlines the details of collaborating on this Ember addon.
 
