@@ -1,7 +1,7 @@
 'use strict';
 
-var path      = require('path');
-var fs        = require('fs');
+var path = require('path');
+var fs   = require('fs');
 
 function DraggableEach(project) {
   this.project = project;
@@ -16,13 +16,28 @@ function unwatchedTree(dir) {
 }
 
 DraggableEach.prototype.treeFor = function treeFor(name) {
-  if(name !== 'bower_components') { return; }
+  var treePath;
+  if(name === 'bower_components') {
+    treePath = path.join(__dirname, 'bower_components');
 
-  var treePath = path.join(__dirname, 'bower_components');
+    if (fs.existsSync(treePath)) {
+      return unwatchedTree(treePath);
+    }
+  }else if(name === 'app'){
+    treePath = path.join(this.root, 'app');
+    var tree;
 
-  if (fs.existsSync(treePath)) {
-    return unwatchedTree(treePath);
+    if (fs.existsSync(treePath)) {
+      if (process.env.EMBER_ADDON_ENV === 'development') {
+        tree = treePath;
+      } else {
+        tree = unwatchedTree(treePath);
+      }
+    }
+
+    return tree;
   }
+
 };
 
 DraggableEach.prototype.included = function(app){
