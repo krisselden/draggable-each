@@ -1,3 +1,46 @@
 html, body {
   margin: 20px;
 }
+
+.sortable-placeholder {
+  display: block;
+  height: 0.8em;
+  width: 250px;
+  border: 1px dashed gray;
+}
+
+.draggable-item, .sortable-placeholder{
+  float: left;
+}
+
+.inner-list-item {
+  height: 150px;
+  width : 240px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.draggable-item {
+  margin: 0.1em;
+  border-radius: 5px;
+  border: 3px dashed transparent;
+}
+
+.draggable-item:hover {
+  border: 3px dashed steelblue;
+}
+
+.draggable-item-handle {
+  display: block;
+  background: red;
+  width: 50px;
+  height: 50px;
+}
+
+.ember-drag-list {
+  overflow: hidden;
+  border: 1px dotted gray;
+  border-radius: 5px;
+  margin: 1em;
+  min-height: 100px;
+}
