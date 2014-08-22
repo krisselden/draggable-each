@@ -24,7 +24,7 @@ DraggableEach.prototype.treeFor = function treeFor(name) {
       return unwatchedTree(treePath);
     }
   }else if(name === 'app'){
-    treePath = path.join(this.root, 'app');
+    treePath = path.join(__dirname, 'app');
     var tree;
 
     if (fs.existsSync(treePath)) {
