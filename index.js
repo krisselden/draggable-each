@@ -17,8 +17,8 @@ function unwatchedTree(dir) {
 
 DraggableEach.prototype.treeFor = function treeFor(name) {
   var treePath;
-  if(name === 'bower_components') {
-    treePath = path.join(__dirname, 'bower_components');
+  if(name === 'vendor') {
+    treePath = path.join(__dirname, 'vendor');
 
     if (fs.existsSync(treePath)) {
       return unwatchedTree(treePath);
@@ -41,7 +41,7 @@ DraggableEach.prototype.treeFor = function treeFor(name) {
 };
 
 DraggableEach.prototype.included = function(app){
-  app.import('bower_components/jquery-ui-sortable/jquery-ui-sortable.js');
+  app.import('vendor/jquery-ui-sortable/jquery-ui-sortable.js');
 }
 
 module.exports = DraggableEach;
