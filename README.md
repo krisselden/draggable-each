@@ -10,6 +10,8 @@ This README outlines the details of collaborating on this Ember addon.
 * `npm install`
 * `bower install`
 
+Note: requires ember-cli > 0.4.0. At the time of this writing, that means master.
+
 ## Running
 
 * `ember server`
