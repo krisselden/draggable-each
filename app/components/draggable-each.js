@@ -53,10 +53,6 @@ function destroySortable(element) {
 var get = Ember.get;
 
 export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
-  //if updateOrder is true, component updates the collection objects' orders using the orderField
-  //else lets the receiver of the itemWasMoved event handle updates
-  updateOrder: true,
-  orderField: "position",
   isVirtual: true,
   classNames: ['ember-drag-list'],
   content: Ember.computed.oneWay('context'),
@@ -183,15 +179,6 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
       this._updateDisabled--;
     }
   },
-  updateItemPositions: function() {
-    var index = 0;
-    var items = this.get('context');
-    var orderField = this.get('orderField');
-    items.forEach(function(item) {
-      index++;
-      item.set(orderField, index);
-    });
-  },
   itemWasDragged: function (oldIndex, newIndex, source) {
     var sourceList = source.get('context');
     var targetList = this.get('context');
@@ -211,9 +198,6 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
         Ember.propertyDidChange(this, 'childViews');
       }, this);
     }, this);
-    if (this.get('updateOrder')) {
-      this.updateItemPositions();
-    }
     this.sendAction('itemWasMoved', entry, oldIndex, newIndex, sourceList);
   }
 });
