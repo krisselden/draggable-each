@@ -1,0 +1,26 @@
+<p>
+  This example uses a render helper in the item template of the
+  draggable-each, which originally did not work.
+</p>
+
+<div style="width: 800px; overflow: hidden; float: left">
+  view: {{view.elementId}}
+  {{view.childViews.length}} <br> {{view.childViews}}
+
+  {{#view Ember.View}}
+    nested view: {{view.elementId}}
+    nested {{view.childViews.length}}<br>{{view.childViews}}
+  {{#view Ember.View}}1{{/view}}
+
+  {{#draggable-each context=items handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved" connectWith=".ember-drag-list"}}
+    {{render 'render-helper-item' this}}
+  {{/draggable-each}}
+  {{/view}}
+</div>
+{{#view Ember.View}}
+  viewId: {{view.elementId}}
+  {{view.childViews.length}} <br> {{view.childViews}}
+  {{#draggable-each context=otherItems handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved" itemView="apple" connectWith=".ember-drag-list"}}
+  {{/draggable-each}}
+{{/view}}
+

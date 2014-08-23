@@ -87,7 +87,8 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
             content: this._keywords$view = (this.isVirtual ? keywords.view : this)
           }),
           controller: Ember.ObjectProxy.create({
-            content: this.get('controller')
+            content: this.get('controller'),
+            container: this.container
           }),
           _view: Ember.ObjectProxy.create({
             content: this
