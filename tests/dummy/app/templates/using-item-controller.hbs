@@ -1,0 +1,20 @@
+<p>
+  This example uses an ArrayController as the context, and the controller
+  specifies an itemController, which originally had a problem because
+  itemController is destroyed after a removeAt operation. To know if it is working, each time you drag-and-drop an item, *all* items should show the number of drag-and-drop operations that have happened so far.
+</p>
+<div style="width: 400px; overflow: hidden; float: left">
+  view: {{view.elementId}}
+  {{view.childViews.length}} <br> {{view.childViews}}
+
+  {{#view Ember.View}}
+    nested view: {{view.elementId}}
+    nested {{view.childViews.length}}<br>{{view.childViews}}
+
+  {{#draggable-each context=this handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved"}}
+    <div class="draggable-item-handle">{{name}}</div>
+    view.elementId:{{view.elementId}} (X)
+    ({{status}})
+  {{/draggable-each}}
+  {{/view}}
+</div>

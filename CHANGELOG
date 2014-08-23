@@ -1,3 +1,7 @@
+Version 0.0.3
+
+[BUGFIX] When presenting an ArrayController which specified an item controller, the content of the moved itemView needs to be reset, otherwise it is left with a destroyed itemController. (lukemelia)
+
 Version 0.0.2
 
 [SCOPE] Remove code for updating position field of models. That is outside the scope of this component. (lukemelia)

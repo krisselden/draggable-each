@@ -1,6 +1,6 @@
 {
   "name": "draggable-each",
-  "version": "0.0.2",
+  "version": "0.0.3-master",
   "directories": {
     "doc": "doc",
     "test": "test"

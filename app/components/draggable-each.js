@@ -193,6 +193,7 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
 
         sourceList.removeAt(oldIndex);
         targetList.insertAt(newIndex, entry);
+        view.set('content', targetList.objectAt(newIndex)); // needed when using item controllers that will get destroyed subsequent to the removeAt operation
 
         Ember.propertyDidChange(source, 'childViews');
         Ember.propertyDidChange(this, 'childViews');
