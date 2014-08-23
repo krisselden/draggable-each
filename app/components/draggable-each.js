@@ -6,7 +6,7 @@ function index(element, selector) {
   return element.parent().children(selector).index(element);
 }
 
-function applySortable(el, target, method, itemSelector, handleSelector, connectWith) {
+function applySortable(el, target, method, itemSelector, handleSelector, connectWith, axis) {
   if (el) {
     var options = {
       start: function(e, ui) {
@@ -18,7 +18,6 @@ function applySortable(el, target, method, itemSelector, handleSelector, connect
         var newIndex = index(ui.item, itemSelector);
         var oldIndex = ui.item.data('dragon-drop-old-index');
         var source = ui.item.__source__;
-
         if (ui.item.closest('.ember-drag-list').attr('id') === target.get('elementId')) {
           Ember.run(function() {
             target[method](oldIndex, newIndex, source);
@@ -37,6 +36,7 @@ function applySortable(el, target, method, itemSelector, handleSelector, connect
 
     options.connectWith = connectWith || false;
 
+    if (axis)           { options.axis   = axis;           }
     if (itemSelector)   { options.item   = itemSelector;   }
     if (handleSelector) { options.handle = handleSelector; }
 
@@ -117,7 +117,13 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
 
   didInsertElement: function () {
     Ember.View.views[this.get('elementId')] = this;
-    applySortable(this.$(), this, 'itemWasDragged', this.get('itemSelector'), this.get('handleSelector'), this.get('connectWith'));
+    applySortable(this.$(),
+                  this,
+                  'itemWasDragged',
+                  this.get('itemSelector'),
+                  this.get('handleSelector'),
+                  this.get('connectWith'),
+                  this.get('axis'));
   },
 
   willDestroyElement: function () {
