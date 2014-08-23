@@ -2,7 +2,19 @@
 
 @stefanpenner's https://github.com/stefanpenner/d-d repackaged as an ember-cli-addon, which wraps jquery-ui-sortable in an ember component.
 
-This README outlines the details of collaborating on this Ember addon.
+## Using this component in your ember-cli app
+
+Add a dependency to your `package.json` file like:
+
+  `"draggable-each": "plyfe/draggable-each"`
+
+or
+
+  `"draggable-each": "https://github.com/plyfe/draggable-each/archive/v0.0.x.tar.gz"`
+
+Then run `npm install` and use the `draggable-each` as you see fit. See `test/dummy/app` for examples of usage.
+
+This rest of this README outlines the details of collaborating on this Ember addon.
 
 ## Installation
 
@@ -27,3 +39,7 @@ Note: development requires ember-cli > 0.4.0. At the time of this writing, that 
 * `ember build`
 
 For more information on using ember-cli, visit [http://iamstef.net/ember-cli/](http://iamstef.net/ember-cli/).
+
+## Credits
+
+Original implementation by @stefanpenner. Additional contributions by authors listed in the CHANGELOG. Thanks to Plyfe, Vestorly, and an unnamed client of Yapp Labs for their support of developing and open sourcing this project.
