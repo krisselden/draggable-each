@@ -1,3 +1,7 @@
+Version 0.0.2
+
+[SCOPE] Remove code for updating position field of models. That is outside the scope of this component. (lukemelia)
+
 Version 0.0.1
 
 [BUGFIX] Fix issue with using {{render }} helper in item template (lukemelia)
