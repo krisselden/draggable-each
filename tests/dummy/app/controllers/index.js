@@ -8,7 +8,7 @@ export default Ember.Controller.extend({
       window.alert('did save: ' + model.name);
     },
     itemWasMoved: function(model, from, to) {
-      //Ember.Logger.info('itemWasMoved', model, from, '->', to);
+      Ember.Logger.info('itemWasMoved', model, from, '->', to);
     }
   }
 });
