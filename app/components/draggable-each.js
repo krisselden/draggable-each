@@ -84,7 +84,11 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
           }),
           controller: Ember.ObjectProxy.create({
             content: this.get('controller'),
-            container: this.container
+            container: this.container,
+            send: function() {
+              var content = this.get('content');
+              content.send.apply(content, arguments);
+            }
           }),
           _view: Ember.ObjectProxy.create({
             content: this

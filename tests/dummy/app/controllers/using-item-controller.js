@@ -9,6 +9,9 @@ export default Ember.ArrayController.extend({
       this.forEach(function(itemController){
         itemController.set('status', 'moved x' + numMoves);
       });
+    },
+    remove: function(item){
+      this.get('content').removeObject(item);
     }
   }
 });

@@ -13,6 +13,7 @@
 
   {{#draggable-each context=this handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved"}}
     <div class="draggable-item-handle">{{name}}</div>
+    <button class="remove" {{action "remove" this}}>remove</button>
     view.elementId:{{view.elementId}} (X)
     ({{status}})
   {{/draggable-each}}
