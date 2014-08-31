@@ -190,8 +190,8 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     }
   },
   itemWasDragged: function (oldIndex, newIndex, source) {
-    var sourceList = source.get('context');
-    var targetList = this.get('context');
+    var sourceList = source.get('content');
+    var targetList = this.get('content');
 
     var object = sourceList.objectAt(oldIndex);
     var entry = object.isController ? object.get('content') : object;
