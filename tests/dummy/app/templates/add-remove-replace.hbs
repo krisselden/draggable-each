@@ -1,0 +1,13 @@
+<p>
+  This example uses a simple array as the content, and has buttons to manipulate that array, to verify that bindings work correctly.
+</p>
+<div style="width: 400px; overflow: hidden; float: left">
+
+  <button {{action "add"}}>Add</button> <button {{action "replace"}}>Replace array</button>
+
+  {{#draggable-each context=items handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved"}}
+    <div class="draggable-item-handle">{{name}}</div>
+    <button class="remove" {{action "remove" this}}>remove</button>
+    view.elementId:{{view.elementId}} (X)
+  {{/draggable-each}}
+</div>

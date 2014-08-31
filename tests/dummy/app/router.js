@@ -8,6 +8,7 @@ Router.map(function() {
   this.route('render-helper');
   this.route('using-item-controller');
   this.route('limited-axis');
+  this.route('add-remove-replace');
 });
 
 export default Router;
