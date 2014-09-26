@@ -55,7 +55,9 @@ var get = Ember.get;
 export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
   isVirtual: true,
   classNames: ['ember-drag-list'],
-  content: Ember.computed.oneWay('context'),
+  content: Ember.computed('context', function(){ // can't use Ember.computed.oneWay as of Ember 1.7.0. Not sure why yet. Example VI breaks.
+    return this.get('context');
+  }),
   handleSelector: ".draggable-item-handle",
   itemSelector: '.draggable-item',
   target: Ember.computed.oneWay('controller'),
