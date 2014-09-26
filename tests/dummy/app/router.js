@@ -9,6 +9,7 @@ Router.map(function() {
   this.route('using-item-controller');
   this.route('limited-axis');
   this.route('add-remove-replace');
+  this.route('swap-array');
 });
 
 export default Router;
