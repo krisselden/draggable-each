@@ -164,12 +164,14 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
   },
 
   arrayWillChange: function() {
-    if (this._updateDisabled > 0) { return ;}
+    if (this.isDestroyed || this.isDestroying) { return; }
+    if (this._updateDisabled > 0) { return; }
     this._super.apply(this, arguments);
   },
 
   arrayDidChange: function() {
-    if (this._updateDisabled > 0) { return ;}
+    if (this.isDestroyed || this.isDestroying) { return; }
+    if (this._updateDisabled > 0) { return; }
     this._super.apply(this, arguments);
   },
   // - [x] ensure childViews is invalidated
