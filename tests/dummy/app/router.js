@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('limited-axis');
   this.route('add-remove-replace');
   this.route('swap-array');
+  this.route('two-lists');
 });
 
 export default Router;

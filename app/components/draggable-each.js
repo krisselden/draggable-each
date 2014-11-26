@@ -1,6 +1,37 @@
 import Ember from 'ember';
+var useMorphStrategy = parseFloat(Ember.VERSION) >= 1.8;
 
 var a_slice = Array.prototype.slice;
+
+// after a jQuery-based re-order, the component's `_childViews` will be correct
+// but its morphs will be out of sync. This function corrects the morphs by updating
+// them to match the `_childViews` order.
+function syncChildMorphs(collectionView) {
+  var childViews = collectionView._childViews;
+  var morph = collectionView._childViewsMorph;
+  morph.morphs = [];
+
+  var i, l;
+  for (i=0, l=childViews.length; i<l; i++) {
+    var childViewMorph = childViews[i]._morph;
+    morph.morphs.push(childViewMorph);
+    if (i === 0) {
+      childViewMorph.before = null;
+      childViewMorph.start = morph.start;
+    } else {
+      childViewMorph.before = childViews[i-1]._morph;
+      childViewMorph.start = childViews[i-1].get('element');
+    }
+
+    if (i === l-1) {
+      childViewMorph.end = morph.end;
+      childViewMorph.after = null;
+    } else {
+      childViewMorph.end = childViews[i+1].get('element');
+      childViewMorph.after = childViews[i+1]._morph;
+    }
+  }
+}
 
 function index(element, selector) {
   return element.parent().children(selector).index(element);
@@ -23,15 +54,18 @@ function applySortable(el, target, method, itemSelector, handleSelector, connect
             target[method](oldIndex, newIndex, source);
           });
         }
-      },
+      }//,
 
-      receive: function (e, ui) {
-        var source = ui.item.__source__;
+      // receive: function (e, ui) {
+      //   var source = ui.item.__source__;
 
-        Ember.run(function() {
-          target.viewReceived(Ember.View.views[ui.item.attr('id')], source);
-        });
-      }
+      //   debugger
+      //   var view = Ember.View.views[ui.item.attr('id')];
+      //   Ember.run(function() {
+      //     target.viewReceived(view, source);
+      //   });
+      //   debugger
+      // }
     };
 
     options.connectWith = connectWith || false;
@@ -157,7 +191,7 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     });
   },
 
-  viewReceived: function(view /*, source */) {
+  viewReceived: function(view, source) {
     view.set('parentView', this.get('parentView'));
     view.set('_parentView', this);
     view._clonedKeywords$.view.set('content', this.templateData.keywords.view);
@@ -203,11 +237,19 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
 
     this.execWithoutRerender(function(){
       source.execWithoutRerender(function() {
+        if (source !== this) {
+          this.viewReceived(view, source);
+        }
         this._childViews.splice(newIndex, 0,  view);
 
         sourceList.removeAt(oldIndex);
         targetList.insertAt(newIndex, entry);
         view.set('content', targetList.objectAt(newIndex)); // needed when using item controllers that will get destroyed subsequent to the removeAt operation
+
+        if (useMorphStrategy) {
+          syncChildMorphs(source);
+          if (source !== this) { syncChildMorphs(this); }
+        }
 
         Ember.propertyDidChange(source, 'childViews');
         Ember.propertyDidChange(this, 'childViews');

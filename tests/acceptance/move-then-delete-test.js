@@ -44,18 +44,10 @@ test('drag then delete', function() {
   });
   click('.draggable-item:eq(1) .remove');
   andThen(function(){
-    var $listElem = find('.ember-drag-list');
-    var component = Ember.View.views[$listElem.attr('id')];
     equal(component.get('childViews.length'), 1);
     equal(component.get('childViews.firstObject.content.name'), 'Bruce');
     ok(!component.get('childViews.firstObject')._morph.start, 'post-delete remaining view morph start');
     ok(!component.get('childViews.firstObject')._morph.end, 'post-delete remaining view morph end');
-    debugger
-    // return new Ember.RSVP.Promise(function(resolve){
-    //   stop();
-    // });
-
-
     arrayEqual('.draggable-item-handle', [ 'Bruce' ], 'post-delete order');
   });
 });

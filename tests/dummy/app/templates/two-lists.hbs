@@ -1,0 +1,17 @@
+<p>
+  This example illustrates the ability to drag between lists very simply.
+</p>
+
+<div style="width: 200px; height: 125px; overflow: hidden; border: 1px dotted blue">
+  {{#draggable-each context=leftItems classNames="left-list" handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved" connectWith=".ember-drag-list"}}
+    <div class="draggable-item-handle">{{name}}</div>
+    view.elementId:{{view.elementId}}
+  {{/draggable-each}}
+</div>
+
+<div style="width: 200px; height: 250px; overflow: hidden; border: 1px dotted blue">
+  {{#draggable-each context=rightItems classNames="right-list" handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved" connectWith=".ember-drag-list"}}
+    <div class="draggable-item-handle">{{name}}</div>
+    view.elementId:{{view.elementId}}
+  {{/draggable-each}}
+</div>
