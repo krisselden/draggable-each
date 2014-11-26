@@ -3,12 +3,13 @@
   "dependencies": {
     "handlebars": "~1.3.0",
     "jquery": "^1.11.1",
-    "ember": "1.7.0",
+    "ember": "1.8.1",
     "ember-resolver": "~0.1.7",
     "loader": "stefanpenner/loader.js#1.0.1",
     "ember-cli-shims": "stefanpenner/ember-cli-shims#0.0.3",
     "ember-cli-test-loader": "rjackson/ember-cli-test-loader#0.0.2",
     "ember-load-initializers": "stefanpenner/ember-load-initializers#0.0.2",
-    "jquery-ui-sortable": "*"
+    "jquery-ui-sortable": "*",
+    "jquery.simulate.drag-sortable": "mattheworiordan/jquery.simulate.drag-sortable.js#66dcc5b9ee133f76f3acc6d4bb77226d7fabc547"
   }
 }

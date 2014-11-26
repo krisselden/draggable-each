@@ -53,7 +53,7 @@ function destroySortable(element) {
 var get = Ember.get;
 
 export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
-  isVirtual: true,
+  isVirtual: false,
   classNames: ['ember-drag-list'],
   content: Ember.computed('context', function(){ // can't use Ember.computed.oneWay as of Ember 1.7.0. Not sure why yet. Example VI breaks.
     return this.get('context');
@@ -103,7 +103,7 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
 
         return keywords;
       },
-      isVirtual: true,
+      isVirtual: false,
       context: Ember.computed.oneWay('content'),
       template: this.get('template'),
       classNames: ['draggable-item'],
