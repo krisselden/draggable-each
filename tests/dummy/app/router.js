@@ -11,6 +11,7 @@ Router.map(function() {
   this.route('add-remove-replace');
   this.route('swap-array');
   this.route('two-lists');
+  this.route('action-bubbling');
 });
 
 export default Router;

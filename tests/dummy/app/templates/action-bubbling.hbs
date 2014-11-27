@@ -1,0 +1,10 @@
+<p>
+  This example illustrates action bubbling from component within a draggable-each template to drag between lists very simply.
+</p>
+<p class="mega-status">Mega Status: <b>{{megaStatus}}</b></p>
+
+<div style="width: 200px; height: 125px; overflow: hidden; border: 1px dotted blue">
+  {{#draggable-each context=items handleSelector=".draggable-item-handle" itemWasMoved="itemWasMoved"}}
+    {{item-with-action name="name" action="megaAction"}}
+  {{/draggable-each}}
+</div>
