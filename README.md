@@ -6,11 +6,11 @@
 
 Add a dependency to your `package.json` file like:
 
-  `"draggable-each": "plyfe/draggable-each"`
+  `"draggable-each": "krisselden/draggable-each"`
 
 or
 
-  `"draggable-each": "https://github.com/plyfe/draggable-each/archive/v0.0.x.tar.gz"`
+  `"draggable-each": "https://github.com/krisselden/draggable-each/archive/v0.0.x.tar.gz"`
 
 Then run `npm install` and use the `draggable-each` as you see fit. See `test/dummy/app` for examples of usage.
 
@@ -42,4 +42,4 @@ For more information on using ember-cli, visit [http://iamstef.net/ember-cli/](h
 
 ## Credits
 
-Original implementation by @stefanpenner. Additional contributions by authors listed in the CHANGELOG. Thanks to Plyfe, Vestorly, and an unnamed client of Yapp Labs for their support of developing and open sourcing this project.
+Original implementation by @krisselden with subsequent work by @stefanpenner and additional contributions by authors listed in the CHANGELOG. Thanks to Plyfe, Vestorly, and an unnamed client of Yapp Labs for their support of developing and open sourcing this project.
