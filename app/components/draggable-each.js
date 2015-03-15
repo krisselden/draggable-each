@@ -54,18 +54,7 @@ function applySortable(el, target, method, itemSelector, handleSelector, connect
             target[method](oldIndex, newIndex, source);
           });
         }
-      }//,
-
-      // receive: function (e, ui) {
-      //   var source = ui.item.__source__;
-
-      //   debugger
-      //   var view = Ember.View.views[ui.item.attr('id')];
-      //   Ember.run(function() {
-      //     target.viewReceived(view, source);
-      //   });
-      //   debugger
-      // }
+      }
     };
 
     options.connectWith = connectWith || false;
@@ -109,47 +98,10 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     }
 
     this.set('itemViewClass', ItemViewClass.extend({
-      cloneKeywords: function () {
-        var templateData = get(this, 'templateData');
-
-        var keywords = templateData ? Ember.copy(templateData.keywords) : {};
-
-        this._clonedKeywords$ = this._clonedKeywords$ || {
-          view: Ember.ObjectProxy.create({
-            content: this._keywords$view = (this.isVirtual ? keywords.view : this)
-          }),
-          controller: Ember.ObjectProxy.create({
-            content: this.get('controller'),
-            container: this.container,
-            send: function() {
-              var content = this.get('content');
-              content.send.apply(content, arguments);
-            }
-          }),
-          _view: Ember.ObjectProxy.create({
-            content: this
-          })
-        };
-
-        Ember.set(keywords, 'view', this._clonedKeywords$.view);
-        Ember.set(keywords, '_view', this._clonedKeywords$._view);
-        Ember.set(keywords, 'controller', this._clonedKeywords$.controller);
-
-        return keywords;
-      },
       isVirtual: false,
       context: Ember.computed.oneWay('content'),
       template: this.get('template'),
-      classNames: ['draggable-item'],
-      didInsertElement: function () {
-        // hack to allow eventPropogation on virtualViews: https://github.com/emberjs/ember.js/pull/5179
-        Ember.View.views[this.get('elementId')] = this;
-      },
-
-      willDestroyElement: function () {
-        // hack to allow eventPropogation on virtualViews: https://github.com/emberjs/ember.js/pull/5179
-        delete Ember.View.views[this.get('elementId')];
-      }
+      classNames: ['draggable-item']
     }));
 
     this._super.apply(this, arguments);
@@ -192,11 +144,14 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
   },
 
   viewReceived: function(view, source) {
-    view.set('parentView', this.get('parentView'));
+    view.set('parentView', this);
     view.set('_parentView', this);
-    view._clonedKeywords$.view.set('content', this.templateData.keywords.view);
-    view._clonedKeywords$.controller.set('content', this.templateData.keywords.controller);
-    view._clonedKeywords$._view.set('content', this);
+    var contextView = this._contextView || this._parentView;
+
+    var parentKeywords = contextView._keywords;
+    Ember.set(view._keywords, 'view', parentKeywords.view);
+    Ember.set(view._keywords, 'controller', parentKeywords.controller);
+    Ember.set(view._keywords, '_view', this);
   },
 
   arrayWillChange: function() {
@@ -210,13 +165,6 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     if (this._updateDisabled > 0) { return; }
     this._super.apply(this, arguments);
   },
-  // - [x] ensure childViews is invalidated
-  // - [x] nonVirtualChildViews (may be fixed by isVirtal)
-  // - [ ] insertItem hook
-  // - [ ] removeItem hook
-  // - [x] "view" within children be from the outer scope (may be fixed by isVirtal)
-  // - [x] keywords from outercontext should change when moved between trees (may be fixed by isVirtal)
-  // - [ ] make eventDispatcher not block the move event stuff (caused by virtual)
 
   execWithoutRerender: function (func, context) {
     this._updateDisabled++;
