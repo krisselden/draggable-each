@@ -1,12 +1,17 @@
 import Ember from 'ember';
-var useMorphStrategy = parseFloat(Ember.VERSION) >= 1.8;
+
+var EmberVersion = parseFloat(Ember.VERSION);
+
+var useExclusiveMorphStrategy = EmberVersion >= 1.8 && EmberVersion < 1.11;
+// This is going to break again after the idempotent branch lands
+var useInclusiveMorphStrategy = EmberVersion >= 1.11;
 
 var a_slice = Array.prototype.slice;
 
 // after a jQuery-based re-order, the component's `_childViews` will be correct
 // but its morphs will be out of sync. This function corrects the morphs by updating
 // them to match the `_childViews` order.
-function syncChildMorphs(collectionView) {
+function syncExclusiveChildMorphs(collectionView) {
   var childViews = collectionView._childViews;
   var morph = collectionView._childViewsMorph;
   morph.morphs = [];
@@ -29,6 +34,35 @@ function syncChildMorphs(collectionView) {
     } else {
       childViewMorph.end = childViews[i+1].get('element');
       childViewMorph.after = childViews[i+1]._morph;
+    }
+  }
+}
+
+function syncInclusiveMorphChildMorphs(collectionView) {
+  var childViews = collectionView._childViews;
+  var childViewsMorph = collectionView._childViewsMorph;
+  var length = childViews.length;
+  if (length === 0) {
+    childViewsMorph.firstChildMorph = null;
+    childViewsMorph.lastChildMorph = null;
+    return;
+  }
+
+  var i;
+  for (i=0; i<length; i++) {
+    var morph = childViews[i]._morph;
+    if (i === 0) {
+      morph.previousMorph = null;
+      childViewsMorph.firstChildMorph = morph;
+    } else {
+      morph.previousMorph = childViews[i-1]._morph;
+    }
+
+    if (i === length-1) {
+      morph.nextMorph = null;
+      childViewsMorph.lastChildMorph = morph;
+    } else {
+      morph.nextMorph = childViews[i+1]._morph;
     }
   }
 }
@@ -143,7 +177,7 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     });
   },
 
-  viewReceived: function(view, source) {
+  viewReceived: function(view) {
     view.set('parentView', this);
     view.set('_parentView', this);
     var contextView = this._contextView || this._parentView;
@@ -194,9 +228,14 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
         targetList.insertAt(newIndex, entry);
         view.set('content', targetList.objectAt(newIndex)); // needed when using item controllers that will get destroyed subsequent to the removeAt operation
 
-        if (useMorphStrategy) {
-          syncChildMorphs(source);
-          if (source !== this) { syncChildMorphs(this); }
+        if (useExclusiveMorphStrategy) {
+          syncExclusiveChildMorphs(source);
+          if (source !== this) { syncExclusiveChildMorphs(this); }
+        } else if (useInclusiveMorphStrategy) {
+          syncInclusiveMorphChildMorphs(source);
+          if (source !== this) {
+            syncInclusiveMorphChildMorphs(this);
+          }
         }
 
         Ember.propertyDidChange(source, 'childViews');
