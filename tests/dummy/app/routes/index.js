@@ -59,7 +59,8 @@ export default  Ember.Route.extend({
       }, {
         id: 2,
         list: model2
-      }]
+      }],
+      otherList: []
     };
   }
 });
