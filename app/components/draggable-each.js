@@ -53,6 +53,7 @@ function syncInclusiveMorphChildMorphs(collectionView) {
     var morph = childViews[i]._morph;
     if (i === 0) {
       morph.previousMorph = null;
+      childViewsMorph.firstNode = morph.firstNode;
       childViewsMorph.firstChildMorph = morph;
     } else {
       morph.previousMorph = childViews[i-1]._morph;
@@ -60,6 +61,7 @@ function syncInclusiveMorphChildMorphs(collectionView) {
 
     if (i === length-1) {
       morph.nextMorph = null;
+      childViewsMorph.lastNode = morph.lastNode;
       childViewsMorph.lastChildMorph = morph;
     } else {
       morph.nextMorph = childViews[i+1]._morph;
