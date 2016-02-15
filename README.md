@@ -2,6 +2,10 @@
 
 Wraps jquery-ui-sortable in an ember component.
 
+## DEPRECATED
+
+This addon is not being maintained. We suggest you check out [ember-sortable](https://github.com/jgwhite/ember-sortable).
+
 ## Using this component in your ember-cli app
 
 Add a dependency to your `package.json` file like:
