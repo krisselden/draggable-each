@@ -1,7 +1,7 @@
-<div class="draggable-item-handle">{{this.model}}</div>
+<div class="draggable-item-handle">{{model}}</div>
 view.elementId:{{view.elementId}} (X)
-{{apple-pie name=name}}
+{{apple-pie name=model.name}}
 parentView: {{view.parentView.elementId}}
 {{#pumpkin-pie}}
-  {{id}} : {{name}} – parentView: {{view.parentView.elementId}}
+  {{model.id}} : {{model.name}} – parentView: {{view.parentView.elementId}}
 {{/pumpkin-pie}}

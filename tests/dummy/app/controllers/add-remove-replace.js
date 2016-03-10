@@ -4,7 +4,6 @@ export default Ember.Controller.extend({
   items: [
     Ember.Object.create({ name: 'Tony' }),
     Ember.Object.create({ name: 'Bruce' }),
-    Ember.Object.create({ name: 'Steve' })
   ],
   otherList: [],
   actions: {

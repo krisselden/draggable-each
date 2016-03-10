@@ -1,6 +1,73 @@
 import Ember from 'ember';
 
+var EmberVersion = parseFloat(Ember.VERSION);
+
+var useExclusiveMorphStrategy = EmberVersion >= 1.8 && EmberVersion < 1.11;
+// This is going to break again after the idempotent branch lands
+var useInclusiveMorphStrategy = EmberVersion >= 1.11;
+
 var a_slice = Array.prototype.slice;
+
+// after a jQuery-based re-order, the component's `_childViews` will be correct
+// but its morphs will be out of sync. This function corrects the morphs by updating
+// them to match the `_childViews` order.
+function syncExclusiveChildMorphs(collectionView) {
+  var childViews = collectionView._childViews;
+  var morph = collectionView._childViewsMorph;
+  morph.morphs = [];
+
+  var i, l;
+  for (i=0, l=childViews.length; i<l; i++) {
+    var childViewMorph = childViews[i]._morph;
+    morph.morphs.push(childViewMorph);
+    if (i === 0) {
+      childViewMorph.before = null;
+      childViewMorph.start = morph.start;
+    } else {
+      childViewMorph.before = childViews[i-1]._morph;
+      childViewMorph.start = childViews[i-1].get('element');
+    }
+
+    if (i === l-1) {
+      childViewMorph.end = morph.end;
+      childViewMorph.after = null;
+    } else {
+      childViewMorph.end = childViews[i+1].get('element');
+      childViewMorph.after = childViews[i+1]._morph;
+    }
+  }
+}
+
+function syncInclusiveMorphChildMorphs(collectionView) {
+  var childViews = collectionView._childViews;
+  var childViewsMorph = collectionView._childViewsMorph;
+  var length = childViews.length;
+  if (length === 0) {
+    childViewsMorph.firstChildMorph = null;
+    childViewsMorph.lastChildMorph = null;
+    return;
+  }
+
+  var i;
+  for (i=0; i<length; i++) {
+    var morph = childViews[i]._morph;
+    if (i === 0) {
+      morph.previousMorph = null;
+      childViewsMorph.firstNode = morph.firstNode;
+      childViewsMorph.firstChildMorph = morph;
+    } else {
+      morph.previousMorph = childViews[i-1]._morph;
+    }
+
+    if (i === length-1) {
+      morph.nextMorph = null;
+      childViewsMorph.lastNode = morph.lastNode;
+      childViewsMorph.lastChildMorph = morph;
+    } else {
+      morph.nextMorph = childViews[i+1]._morph;
+    }
+  }
+}
 
 function index(element, selector) {
   return element.parent().children(selector).index(element);
@@ -23,14 +90,6 @@ function applySortable(el, target, method, itemSelector, handleSelector, connect
             target[method](oldIndex, newIndex, source);
           });
         }
-      },
-
-      receive: function (e, ui) {
-        var source = ui.item.__source__;
-
-        Ember.run(function() {
-          target.viewReceived(Ember.View.views[ui.item.attr('id')], source);
-        });
       }
     };
 
@@ -53,7 +112,7 @@ function destroySortable(element) {
 var get = Ember.get;
 
 export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
-  isVirtual: true,
+  isVirtual: false,
   classNames: ['ember-drag-list'],
   content: Ember.computed('context', function(){ // can't use Ember.computed.oneWay as of Ember 1.7.0. Not sure why yet. Example VI breaks.
     return this.get('context');
@@ -75,47 +134,10 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     }
 
     this.set('itemViewClass', ItemViewClass.extend({
-      cloneKeywords: function () {
-        var templateData = get(this, 'templateData');
-
-        var keywords = templateData ? Ember.copy(templateData.keywords) : {};
-
-        this._clonedKeywords$ = this._clonedKeywords$ || {
-          view: Ember.ObjectProxy.create({
-            content: this._keywords$view = (this.isVirtual ? keywords.view : this)
-          }),
-          controller: Ember.ObjectProxy.create({
-            content: this.get('controller'),
-            container: this.container,
-            send: function() {
-              var content = this.get('content');
-              content.send.apply(content, arguments);
-            }
-          }),
-          _view: Ember.ObjectProxy.create({
-            content: this
-          })
-        };
-
-        Ember.set(keywords, 'view', this._clonedKeywords$.view);
-        Ember.set(keywords, '_view', this._clonedKeywords$._view);
-        Ember.set(keywords, 'controller', this._clonedKeywords$.controller);
-
-        return keywords;
-      },
-      isVirtual: true,
+      isVirtual: false,
       context: Ember.computed.oneWay('content'),
       template: this.get('template'),
-      classNames: ['draggable-item'],
-      didInsertElement: function () {
-        // hack to allow eventPropogation on virtualViews: https://github.com/emberjs/ember.js/pull/5179
-        Ember.View.views[this.get('elementId')] = this;
-      },
-
-      willDestroyElement: function () {
-        // hack to allow eventPropogation on virtualViews: https://github.com/emberjs/ember.js/pull/5179
-        delete Ember.View.views[this.get('elementId')];
-      }
+      classNames: ['draggable-item']
     }));
 
     this._super.apply(this, arguments);
@@ -157,12 +179,15 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     });
   },
 
-  viewReceived: function(view /*, source */) {
-    view.set('parentView', this.get('parentView'));
+  viewReceived: function(view) {
+    view.set('parentView', this);
     view.set('_parentView', this);
-    view._clonedKeywords$.view.set('content', this.templateData.keywords.view);
-    view._clonedKeywords$.controller.set('content', this.templateData.keywords.controller);
-    view._clonedKeywords$._view.set('content', this);
+    var contextView = this._contextView || this._parentView;
+
+    var parentKeywords = contextView._keywords;
+    Ember.set(view._keywords, 'view', parentKeywords.view);
+    Ember.set(view._keywords, 'controller', parentKeywords.controller);
+    Ember.set(view._keywords, '_view', this);
   },
 
   arrayWillChange: function() {
@@ -176,13 +201,6 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
     if (this._updateDisabled > 0) { return; }
     this._super.apply(this, arguments);
   },
-  // - [x] ensure childViews is invalidated
-  // - [x] nonVirtualChildViews (may be fixed by isVirtal)
-  // - [ ] insertItem hook
-  // - [ ] removeItem hook
-  // - [x] "view" within children be from the outer scope (may be fixed by isVirtal)
-  // - [x] keywords from outercontext should change when moved between trees (may be fixed by isVirtal)
-  // - [ ] make eventDispatcher not block the move event stuff (caused by virtual)
 
   execWithoutRerender: function (func, context) {
     this._updateDisabled++;
@@ -203,11 +221,24 @@ export default Ember.CollectionView.extend(Ember.TargetActionSupport, {
 
     this.execWithoutRerender(function(){
       source.execWithoutRerender(function() {
+        if (source !== this) {
+          this.viewReceived(view, source);
+        }
         this._childViews.splice(newIndex, 0,  view);
 
         sourceList.removeAt(oldIndex);
         targetList.insertAt(newIndex, entry);
         view.set('content', targetList.objectAt(newIndex)); // needed when using item controllers that will get destroyed subsequent to the removeAt operation
+
+        if (useExclusiveMorphStrategy) {
+          syncExclusiveChildMorphs(source);
+          if (source !== this) { syncExclusiveChildMorphs(this); }
+        } else if (useInclusiveMorphStrategy) {
+          syncInclusiveMorphChildMorphs(source);
+          if (source !== this) {
+            syncInclusiveMorphChildMorphs(this);
+          }
+        }
 
         Ember.propertyDidChange(source, 'childViews');
         Ember.propertyDidChange(this, 'childViews');
